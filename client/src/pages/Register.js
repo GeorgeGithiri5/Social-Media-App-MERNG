@@ -1,10 +1,13 @@
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import {useMutation} from '@apollo/react-hooks'
 import {useForm} from '../util/Hooks'
 
+import {AuthContext} from '../context/auth'
+
 function Register(props){
+    const context = useContext(AuthContext)
     const [errors, setErrors] = useState({})
     const {onChange, onSubmit, values} = useForm(registerUser, {
         username: '',
@@ -13,7 +16,8 @@ function Register(props){
         confirmPassword:''
     })
     const [addUser, {loading}] = useMutation(REGISTER_USER, {
-        update(proxy, result){
+        update(proxy, {data: {register: userData}}){
+            context.login(userData)
             props.history.push('/')
         },
         onError(err){
